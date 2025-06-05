@@ -4,6 +4,7 @@ export const saveUserData = (token, user) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     console.log('Token saved successfully:', token.substring(0, 15) + '...');
+    console.log('User data saved:', user);
   } else {
     console.error('Attempted to save null/undefined token');
   }
@@ -32,5 +33,16 @@ export const logout = () => {
 
 export const getUserData = () => {
   const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  if (user) {
+    try {
+      const userData = JSON.parse(user);
+      console.log('Retrieved user data:', userData);
+      return userData;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }
+  console.log('No user data found in localStorage');
+  return null;
 };

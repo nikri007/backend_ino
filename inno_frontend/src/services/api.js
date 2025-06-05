@@ -55,18 +55,20 @@ api.interceptors.response.use(
   }
 );
 
-// Auth services
+// Auth services - using ONLY simple_auth endpoints
 export const authService = {
   register: async (userData) => {
-    // For multipart/form-data (when uploading profile picture)
+    // Check if userData is FormData (for profile picture uploads)
     if (userData instanceof FormData) {
+      console.log('Sending FormData to /simple_auth/register for file upload');
       return await api.post('/simple_auth/register', userData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    // For regular JSON data
+    // For regular JSON data (fallback)
+    console.log('Sending JSON data to /simple_auth/register');
     return await api.post('/simple_auth/register', userData);
   },
   login: async (credentials) => {
@@ -77,7 +79,7 @@ export const authService = {
   }
 };
 
-// Contact services
+// Contact services - using ONLY simple_contacts endpoints
 export const contactService = {
   create: async (contactData) => {
     return await api.post('/simple_contacts/', contactData);

@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -27,16 +27,38 @@ def create_app(config_name='development'):
          allow_headers=["Content-Type", "Authorization", "Accept"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
     
-    # Import and register blueprints
-    from app.controllers.auth import auth_bp
-    from app.controllers.contacts import contacts_bp
+    # Import and register blueprints - ONLY the simple ones that exist
     from app.controllers.simple_auth import simple_auth_bp
     from app.controllers.simple_contacts import simple_contacts_bp
     
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
-    app.register_blueprint(contacts_bp, url_prefix='/api/contacts')
+    # Register only the existing blueprints
     app.register_blueprint(simple_auth_bp, url_prefix='/api/simple_auth')
     app.register_blueprint(simple_contacts_bp, url_prefix='/api/simple_contacts')
+    
+    # Route to serve uploaded profile pictures
+    @app.route('/uploads/<filename>')
+    def uploaded_file(filename):
+        """Serve uploaded files (profile pictures)"""
+        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
+        return send_from_directory(upload_folder, filename)
+    
+    # Route to test image serving
+    @app.route('/api/test-upload')
+    def test_upload():
+        """Test endpoint to check upload functionality"""
+        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
+        upload_path = os.path.join(app.root_path, upload_folder)
+        
+        # Ensure upload folder exists
+        os.makedirs(upload_path, exist_ok=True)
+        
+        return {
+            'message': 'Upload functionality is working',
+            'upload_folder': upload_folder,
+            'upload_path': upload_path,
+            'folder_exists': os.path.exists(upload_path),
+            'max_content_length': app.config.get('MAX_CONTENT_LENGTH', 'Not set')
+        }
     
     # Shell context processor
     @app.shell_context_processor

@@ -4,6 +4,7 @@ from app import db
 from app.models.contact import Contact
 from app.models.user import User
 
+# Create the blueprint
 simple_contacts_bp = Blueprint('simple_contacts', __name__)
 
 # Helper function to get user from token
