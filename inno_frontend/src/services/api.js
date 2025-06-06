@@ -55,7 +55,7 @@ api.interceptors.response.use(
   }
 );
 
-
+// Auth services - using ONLY simple_auth endpoints
 export const authService = {
   register: async (userData) => {
     // Check if userData is FormData (for profile picture uploads)
